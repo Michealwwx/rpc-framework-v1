@@ -2,7 +2,9 @@ package com.reign.handler;
 
 import com.reign.common.RpcRequest;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
@@ -27,20 +29,16 @@ public class ProcessorHandler implements Runnable {
 
     @Override
     public void run() {
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
         ObjectInputStream objectInputStream = null;
         ObjectOutputStream objectOutputStream = null;
         try {
-            inputStream = socket.getInputStream();
-            outputStream = socket.getOutputStream();
-            //反序列化
-            objectInputStream = new ObjectInputStream(inputStream);
+            //1.反序列化获取请求包装类
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
             RpcRequest rpcRequest = (RpcRequest) objectInputStream.readObject();
-            //获取要调用的类，方法及参数信息；
+            //2.反射调用具体方法
             Object result = invoke(rpcRequest);
-            //将结果通过socket输出;
-            objectOutputStream = new ObjectOutputStream(outputStream);
+            //3.将结果通过socket输出;
+            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(result);
 
         } catch (IOException e) {
@@ -61,15 +59,15 @@ public class ProcessorHandler implements Runnable {
         Object result = null;
         try {
             Class clazz = Class.forName(rpcRequest.getClassName());
-            //确定参数类型
+            //1.确定参数类型
             Object[] params = rpcRequest.getParams();
             Class<?>[] types = new Class<?>[params.length];
             for (int i = 0; i < types.length; i++) {
                 types[i] = params[i].getClass();
             }
-            //根据方法及参数列表获取方法
-            Method method = clazz.getMethod(rpcRequest.getClassName(), types);
-
+            //2.根据方法及参数列表获取方法
+            Method method = clazz.getMethod(rpcRequest.getMethodName(), types);
+            //3.调用方法
             result = method.invoke(service, params);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

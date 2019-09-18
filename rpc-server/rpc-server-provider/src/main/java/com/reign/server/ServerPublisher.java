@@ -21,7 +21,6 @@ public class ServerPublisher {
     private Object service;
     private static ExecutorService es = Executors.newCachedThreadPool();
 
-    //TODO 统计请求个数;
     private AtomicInteger count = new AtomicInteger();
 
     public ServerPublisher(int port, Object service) {
@@ -31,15 +30,12 @@ public class ServerPublisher {
 
     public void publish() {
         ServerSocket serverSocket = null;
-        Socket socket = null;
         while (true) {
             try {
                 serverSocket = new ServerSocket(port);
-                System.out.println("server started !");
-                socket = serverSocket.accept();
-                count.getAndIncrement();
-                System.out.printf("请求个数:{},客户端ip:{},客户端端口:{}",count.get(),socket.getLocalAddress(),socket.getPort());
+                Socket socket = serverSocket.accept();
                 es.submit(new ProcessorHandler(socket, service));
+                System.out.println("客户端总数："+count.addAndGet(1));
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -50,16 +46,8 @@ public class ServerPublisher {
                         e.printStackTrace();
                     }
                 }
-                if (socket != null) {
-                    try {
-                        socket.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
 
         }
     }
-
 }

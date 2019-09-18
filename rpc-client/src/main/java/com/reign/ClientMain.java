@@ -4,11 +4,6 @@ import com.reign.interfaces.UserService;
 import com.reign.model.User;
 import com.reign.proxy.RpcClientProxy;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-
 /**
  * @ClassName ClientMain
  * @Description 主函数
@@ -24,13 +19,16 @@ public class ClientMain {
 
     public static void main(String[] args) {
         RpcClientProxy rpcClientProxy = new RpcClientProxy();
-        //userService是一个代理类
-        UserService userService = rpcClientProxy.clientProxy(UserService.class,host,port);
-        //sayHello实际调用的是动态代理RpcInvokeHandler中的invoke方法；
-        String result = userService.sayHello("");
-        System.out.printf("返回结果："+result);
-        //User user = userService.addUserAge(new User("",3));
+        for (int i = 0; i < 1000; i++) {
+
+            //1.获取代理类
+            UserService userService = rpcClientProxy.clientProxy(UserService.class, host, port);
+            //2.调用方法
+            String result = userService.sayHello("wuwux");
+            System.out.printf("sayHello result ：" + result);
+            User user = userService.addUserAge(new User("", 3));
+            System.out.println("addUserAge result ：" + user.toString());
+        }
 
     }
-
 }

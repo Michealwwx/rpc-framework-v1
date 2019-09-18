@@ -1,6 +1,7 @@
 package com.reign.common;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * @ClassName RpcRequest
@@ -48,5 +49,14 @@ public class RpcRequest implements Serializable {
         this.className = className;
         this.methodName = methodName;
         this.params = params;
+    }
+
+    @Override
+    public String toString() {
+        return "RpcRequest{" +
+                "className='" + className + '\'' +
+                ", methodName='" + methodName + '\'' +
+                ", params=" + Arrays.toString(params) +
+                '}';
     }
 }

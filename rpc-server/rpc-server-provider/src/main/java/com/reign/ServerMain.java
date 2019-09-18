@@ -19,6 +19,8 @@ public class ServerMain {
 
     public static void main(String[] args) {
         ServerPublisher serverPublisher = new ServerPublisher(serverPort, userService);
+        System.out.println("server start!");
+        //暴露方法
         serverPublisher.publish();
     }
 

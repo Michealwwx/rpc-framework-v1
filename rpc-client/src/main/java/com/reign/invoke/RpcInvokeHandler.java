@@ -2,10 +2,6 @@ package com.reign.invoke;
 
 import com.reign.common.RpcRequest;
 import com.reign.net.RpcNetTransport;
-import org.omg.CORBA.SystemException;
-import org.omg.CORBA.portable.InputStream;
-import org.omg.CORBA.portable.OutputStream;
-import org.omg.CORBA.portable.ResponseHandler;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -31,28 +27,27 @@ public class RpcInvokeHandler implements InvocationHandler {
 
     /**
      * 实际上上层调用的服务方法通过动态代理最后调用的就是这个方法；
+     *
      * @param proxy
      * @param method
      * @param args
      * @return
      * @throws Throwable
      */
-    @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         System.out.println("come in");
         RpcRequest rpcRequest = new RpcRequest();
-        rpcRequest.setClassName(proxy.getClass().getName());
-        //rpcRequest.setClassName(method.getDeclaringClass().getName());
+        rpcRequest.setClassName(method.getDeclaringClass().getName());
         rpcRequest.setMethodName(method.getName());
         rpcRequest.setParams(args);
         //发送请求得到返回；
-        RpcNetTransport rpcNetTransport = new RpcNetTransport(host,port);
+        RpcNetTransport rpcNetTransport = new RpcNetTransport(host, port);
         Object object = rpcNetTransport.sendRequest(rpcRequest);
 
         return object;
     }
 
-    private void remoteCall(){
+    private void remoteCall() {
 
     }
 

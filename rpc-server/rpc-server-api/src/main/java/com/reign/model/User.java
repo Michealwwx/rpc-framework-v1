@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @Date 2019-09-17 21:11
  * @Version 1.0
  **/
-public class User{
+public class User implements Serializable{
 
     private String name;
 
@@ -35,6 +35,14 @@ public class User{
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                '}';
     }
 }
 
